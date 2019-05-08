@@ -12,4 +12,8 @@
     </None>
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="System.IO.Pipelines" Version="4.6.0-preview5.19224.8" />
+  </ItemGroup>
+
 </Project>
