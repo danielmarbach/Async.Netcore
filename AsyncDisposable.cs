@@ -10,7 +10,8 @@ class AsyncDisposable : IRunnable
         {
         }
 
-        await using (var correct = new CorrectDisposable())
+        await using (var correct = new CorrectDisposable()
+            .ConfigureAwait(false))
         {
         }        
     }
