@@ -130,9 +130,9 @@ class Program
         {
             Console.ForegroundColor = ConsoleColor.DarkCyan;
             Console.WriteLine();
-            Console.WriteLine("|================================================|");
-            Console.WriteLine($"| {"Remember".PadRight(47)}|");
-            Console.WriteLine("|================================================|");
+            Console.WriteLine("|==============================================================================|");
+            Console.WriteLine($"| {"Remember".PadRight(77)}|");
+            Console.WriteLine("|==============================================================================|");
             Console.WriteLine();
         }
     }
@@ -147,7 +147,7 @@ class Program
 
         threadIds.Push(currentThreadId);
 
-        var longest = runnables.Values.Max(d => d.Name.Length) + 5;
+        var longest = runnables.Values.Max(d => d.Name.Length) + 10;
         int fullWidth = longest * 2;
 
         var currentColor = Console.ForegroundColor;
