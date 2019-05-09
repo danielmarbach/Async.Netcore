@@ -10,6 +10,10 @@
 - `WithCancellation` only adds the token to the enumerator but doesn't influence the state machine
 - `WithCancellation` in combination with `[EnumeratorCancellation]` can be used to ceate a combined token
 
+## Channels
+
+- 
+
 ## Pipelines
 
 - All buffer management is delegated to the `PipeReader`/`PipeWriter` implementations.`
