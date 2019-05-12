@@ -14,6 +14,11 @@
 
 - 
 
+## CustomValueTaskSource
+
+- Very powerful tool to write cached task sources without dropping deep to the async machinery
+- Mostly for framework and library authors
+
 ## Pipelines
 
 - All buffer management is delegated to the `PipeReader`/`PipeWriter` implementations.`
