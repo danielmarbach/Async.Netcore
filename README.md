@@ -12,7 +12,16 @@
 
 ## Channels
 
-- 
+- Low-level async primitives that allows to build higher level primitives like Dataflow library for example.
+- Influenced by Go channels
+- Data structure for publish/subscribe scenarios
+- Allows decoupling of publishes from subscribers
+- Can be combined in-memory or combined with pipelines to buffer network input and output
+
+## CompletedTask
+
+- For pre-computed results, there's no need to call `Task.Run`, that will end up queuing a work item to the thread pool that will immediately complete with the pre-computed value. Instead, use `Task.FromResult`, to create a task wrapping already computed data.
+- Alternatively `ValueTask<TResult>` can be used if low allocations are desired.
 
 ## CustomValueTaskSource
 
