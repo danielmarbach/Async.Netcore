@@ -17,6 +17,7 @@
 - Data structure for publish/subscribe scenarios
 - Allows decoupling of publishes from subscribers
 - Can be combined in-memory or combined with pipelines to buffer network input and output
+- Very good overview can be found in [Nicolas Portmann's article](https://ndportmann.com/system-threading-channels/)
 
 ## CompletedTask
 
