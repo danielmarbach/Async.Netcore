@@ -29,6 +29,12 @@
 - Very powerful tool to write cached task sources without dropping deep to the async machinery
 - Mostly for framework and library authors
 
+## HostedServices
+
+- Hosted Services are managed by the host and started and stopped (in reverse order) the host
+- `IHostedService` is the basic abstraction. For long running background tasks use `BackgroundService`.
+- GenericHost starts hosted services before everything else while WebHost starts the ASP.NET Core pipeline concurrent to the hosted services. This means initializing things in hosted services that controllers rely on can be dangerous.
+
 ## Pipelines
 
 - All buffer management is delegated to the `PipeReader`/`PipeWriter` implementations.`
