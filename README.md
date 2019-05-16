@@ -29,6 +29,21 @@
 - Very powerful tool to write cached task sources without dropping deep to the async machinery
 - Mostly for framework and library authors
 
+## DefaultInterfaces
+
+- Finally we can evolve interfaces as well.
+- They can use the regular keywords.
+- The compiler generates (of course with the async statemachine that I omitted here)
+```
+public interface IRunV2 : IRun
+{
+  async Task Run()
+  {
+    await this.RunAsync().ConfigureAwait(false);
+  }
+}
+```
+
 ## HostedServices
 
 - Hosted Services are managed by the host and started and stopped (in reverse order) the host
