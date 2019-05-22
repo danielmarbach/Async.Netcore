@@ -6,7 +6,6 @@ class CustomValueTaskSource : IRunnable
 {
     public async Task Run()
     {
-        
         var valueTask = new ValueTask(new CustomTaskSource(3), 1);
         for (var i = 0; i < 7; i++)
         {
