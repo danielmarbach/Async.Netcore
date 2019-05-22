@@ -69,6 +69,15 @@ public interface IRunV2 : IRun
    at StackTracesOhMyExtensions.Level2to6(StackTracesOhMy runnable) in C:\p\Async.Netcore\StackTracesOhMyExtensions.cs:line 21
 ```
 
+## SyncOverAsync
+
+- `Task.Result` or `Task.Wait` on asynchronous operations is much worse than calling truly synchronous APIs. Here is what happens
+  - An asynchronous operation is kicked off. 
+  - The calling thread is blocked waiting for that operation to complete.
+  When the asynchronous operation completes, it unblocks the code waiting on that operation. This takes place on another thread.
+- This leads to thread-pool starvation and service outages due to 2 threads being used instead of 1 to complete synchronous operations.
+- If a synchronization context is available it can even lead to deadlocks
+
 ## UnobservedException
 
 - Only when the finalizers are run the unobserved exception is thrown
