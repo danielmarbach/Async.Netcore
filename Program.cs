@@ -40,12 +40,9 @@ class Program
         Console.Clear();
 
         var runnersWithExplainer = (
-            from type in typeof(Program).Assembly.GetTypes()
-            where typeof(IRunnable).IsAssignableFrom(type) && type != typeof(IRunnable)
-            let activatedRunnable = (IRunnable)Activator.CreateInstance(type)
-            let explainer = CreateExplainer(activatedRunnable)
-            orderby type.FullName
-            select new RunnerWithExplainer(activatedRunnable, explainer)
+            from runnable in RunnableProvider.All()
+            let explainer = CreateExplainer(runnable)
+            select new RunnerWithExplainer(runnable, explainer)
         );
 
         var runnables = new Dictionary<int, RunnerWithExplainer>();

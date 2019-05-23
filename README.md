@@ -1,48 +1,11 @@
-## AsyncDisposable
+## SyncOverAsync
 
-- `Stream`, `Utf8JsonWriter`, `System.Threading.Timer`, `CancellationTokenRegistration`, `BinaryWriter`, `TextWriter` and `IAsyncEnumerator<T>` implement `IAsyncDisposable`
-- `Stream`, `BinaryWriter`, `TextWriter`  calls `.Dispose` synchronously
-- `Stream` `FlushAsync` calls `Flush` on another thread which is bad behavior that should be overwritten
-
-## AsyncEnumerable
-
-- `IAsyncEnumerable<T>` allows to write asynchronous pull based streams, similar to regular enumerables with `yield return` and `yield break`
-- `WithCancellation` only adds the token to the enumerator but doesn't influence the state machine
-- `WithCancellation` in combination with `[EnumeratorCancellation]` can be used to ceate a combined token
-
-## Channels
-
-- Low-level async primitives that allows to build higher level primitives like Dataflow library for example.
-- Influenced by Go channels
-- Data structure for publish/subscribe scenarios
-- Allows decoupling of publishes from subscribers
-- Can be combined in-memory or combined with pipelines to buffer network input and output
-- Very good overview can be found in [Nicolas Portmann's article](https://ndportmann.com/system-threading-channels/)
-
-## CompletedTask
-
-- For pre-computed results, there's no need to call `Task.Run`, that will end up queuing a work item to the thread pool that will immediately complete with the pre-computed value. Instead, use `Task.FromResult`, to create a task wrapping already computed data.
-- Alternatively `ValueTask<TResult>` can be used if low allocations are desired.
-
-## CustomValueTaskSource
-
-- Very powerful tool to write cached task sources without dropping deep to the async machinery
-- Mostly for framework and library authors
-
-## DefaultInterfaces
-
-- Finally we can evolve interfaces as well.
-- They can use the regular keywords.
-- The compiler generates (of course with the async statemachine that I omitted here)
-```
-public interface IRunV2 : IRun
-{
-  async Task Run()
-  {
-    await this.RunAsync().ConfigureAwait(false);
-  }
-}
-```
+- `Task.Result` or `Task.Wait` on asynchronous operations is much worse than calling truly synchronous APIs. Here is what happens
+  - An asynchronous operation is kicked off. 
+  - The calling thread is blocked waiting for that operation to complete.
+  When the asynchronous operation completes, it unblocks the code waiting on that operation. This takes place on another thread.
+- This leads to thread-pool starvation and service outages due to 2 threads being used instead of 1 to complete synchronous operations.
+- If a synchronization context is available it can even lead to deadlocks
 
 ## GoodCitizen
 
@@ -59,18 +22,14 @@ public interface IRunV2 : IRun
 - Favours simple sequential async execution over explicit concurrency (concurrency is hard)
 - No silver bullet that magically makes your DB query fasters ;)
 
-## HostedServices
+## UnobservedException
 
-- Hosted Services are managed by the host and started and stopped (in reverse order) the host
-- `IHostedService` is the basic abstraction. For long running background tasks use `BackgroundService`.
-- GenericHost starts hosted services before everything else while WebHost starts the ASP.NET Core pipeline concurrent to the hosted services. This means initializing things in hosted services that controllers rely on can be dangerous.
+- Only when the finalizers are run the unobserved exception is thrown
 
-## Pipelines
+## CompletedTask
 
-- All buffer management is delegated to the `PipeReader`/`PipeWriter` implementations.`
-- Besides handling the memory management, the other core pipelines feature is the ability to peek at data in the Pipe without actually consuming it.
-- `FlushAsync` provides back pressure and flow control. PipeWriter.FlushAsync “blocks” when the amount of data in the Pipe crosses PauseWriterThreshold and “unblocks” when it becomes lower than ResumeWriterThreshold.
-- `PipeScheduler` gives fine grained control over scheduling the IO.
+- For pre-computed results, there's no need to call `Task.Run`, that will end up queuing a work item to the thread pool that will immediately complete with the pre-computed value. Instead, use `Task.FromResult`, to create a task wrapping already computed data.
+- Alternatively `ValueTask<TResult>` can be used if low allocations are desired.
 
 ## ShortcutStatemachine
 
@@ -110,19 +69,6 @@ public interface IRunV2 : IRun
    at StackTracesOhMyExtensions.Level2to6(StackTracesOhMy runnable) in C:\p\Async.Netcore\StackTracesOhMyExtensions.cs:line 21
 ```
 
-## SyncOverAsync
-
-- `Task.Result` or `Task.Wait` on asynchronous operations is much worse than calling truly synchronous APIs. Here is what happens
-  - An asynchronous operation is kicked off. 
-  - The calling thread is blocked waiting for that operation to complete.
-  When the asynchronous operation completes, it unblocks the code waiting on that operation. This takes place on another thread.
-- This leads to thread-pool starvation and service outages due to 2 threads being used instead of 1 to complete synchronous operations.
-- If a synchronization context is available it can even lead to deadlocks
-
-## UnobservedException
-
-- Only when the finalizers are run the unobserved exception is thrown
-
 ## ValueTasks
 
 - Nice for highperf scenarios and only then!
@@ -137,4 +83,53 @@ public interface IRunV2 : IRun
  |    ConsumeValueTaskCrazy |    1000 |  4,140.6 ns | 211.741 ns |   604.109 ns |  4,201.2 ns |   0.89 |     0.28 |       - |       0 B |        
 
 https://github.com/adamsitnik/StateOfTheDotNetPerformance        
+
+## AsyncDisposable
+
+- `Stream`, `Utf8JsonWriter`, `System.Threading.Timer`, `CancellationTokenRegistration`, `BinaryWriter`, `TextWriter` and `IAsyncEnumerator<T>` implement `IAsyncDisposable`
+- `Stream`, `BinaryWriter`, `TextWriter`  calls `.Dispose` synchronously
+- `Stream` `FlushAsync` calls `Flush` on another thread which is bad behavior that should be overwritten
+
+## AsyncEnumerable
+
+- `IAsyncEnumerable<T>` allows to write asynchronous pull based streams, similar to regular enumerables with `yield return` and `yield break`
+- `WithCancellation` only adds the token to the enumerator but doesn't influence the state machine
+- `WithCancellation` in combination with `[EnumeratorCancellation]` can be used to ceate a combined token
+
+## DefaultInterfaces
+
+- Finally we can evolve interfaces as well.
+- They can use the regular keywords.
+- The compiler generates (of course with the async statemachine that I omitted here)
+```
+public interface IRunV2 : IRun
+{
+  async Task Run()
+  {
+    await this.RunAsync().ConfigureAwait(false);
+  }
+}
+```
+
+## HostedServices
+
+- Hosted Services are managed by the host and started and stopped (in reverse order) the host
+- `IHostedService` is the basic abstraction. For long running background tasks use `BackgroundService`.
+- GenericHost starts hosted services before everything else while WebHost starts the ASP.NET Core pipeline concurrent to the hosted services. This means initializing things in hosted services that controllers rely on can be dangerous.
+
+## Pipelines
+
+- All buffer management is delegated to the `PipeReader`/`PipeWriter` implementations.`
+- Besides handling the memory management, the other core pipelines feature is the ability to peek at data in the Pipe without actually consuming it.
+- `FlushAsync` provides back pressure and flow control. PipeWriter.FlushAsync “blocks” when the amount of data in the Pipe crosses PauseWriterThreshold and “unblocks” when it becomes lower than ResumeWriterThreshold.
+- `PipeScheduler` gives fine grained control over scheduling the IO.
+
+## Channels
+
+- Low-level async primitives that allows to build higher level primitives like Dataflow library for example.
+- Influenced by Go channels
+- Data structure for publish/subscribe scenarios
+- Allows decoupling of publishes from subscribers
+- Can be combined in-memory or combined with pipelines to buffer network input and output
+- Very good overview can be found in [Nicolas Portmann's article](https://ndportmann.com/system-threading-channels/)
 
