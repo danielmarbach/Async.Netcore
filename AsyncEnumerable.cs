@@ -10,11 +10,13 @@ class AsyncEnumerable : IRunnable
 {
     public async Task Run()
     {
+        using var anotherTokenSource = new CancellationTokenSource();
+        //anotherTokenSource.CancelAfter(2400);
         using var tokenSource = new CancellationTokenSource();
         tokenSource.CancelAfter(3200);
         
-        await foreach (var delay in ReadDelays()
-            .WithCancellation(tokenSource.Token)
+        await foreach (var delay in ReadDelays(anotherTokenSource.Token)
+            .WithCancellation(tokenSource.Token) // calls GetAsyncEnumerator(token)
             .ConfigureAwait(false))
         {
             Console.WriteLine($"await Task.Delay({delay})");
@@ -24,6 +26,7 @@ class AsyncEnumerable : IRunnable
         }
     }
 
+    // maybe comment out [EnumeratorCancellation]
     async IAsyncEnumerable<int> ReadDelays([EnumeratorCancellation] CancellationToken token = default)
     {
         using (var stream = File.OpenRead("AsyncEnumerable.txt"))
