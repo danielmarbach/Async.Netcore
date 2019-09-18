@@ -51,15 +51,22 @@ static class ValueTasksExtensions
     {
         writer.WriteLine(@"
 - Nice for highperf scenarios and only then!
+- It's not about replacing Task
+- Has a single purpose: Reduce heap allocations on the hot path where common synchronous execution is possible
+- Do not
+ - Await the instance multiple times
+ - Call `AsTask` multiple times
+ - Use `.Result` or `.GetAwaiter().GetResult()` when not yet completed
+ - Use more than one of these techniques to consume the instance
 - Complex to use and easy to get wrong
 - Stats:
 
- |                   Method | Repeats |        Mean |      Error |       StdDev |      Median | Scaled | ScaledSD |   Gen 0 | Allocated |
- |------------------------- |-------- |------------:|-----------:|-------------:|------------:|-------:|---------:|--------:|----------:|
- |          **ConsumeTask** |    1000 |  9,307.1 ns | 396.345 ns | 1,091.649 ns |  9,501.1 ns |   2.00 |     0.60 | 11.4441 |   72072 B |
- |    ConsumeValueTaskWrong |    1000 | 11,073.7 ns | 468.996 ns | 1,382.844 ns | 10,329.0 ns |   2.38 |     0.73 |       - |       0 B |
- | ConsumeValueTaskProperly |    1000 |  5,075.2 ns | 543.450 ns | 1,602.374 ns |  4,455.4 ns |   1.00 |     0.00 |       - |       0 B |
- |    ConsumeValueTaskCrazy |    1000 |  4,140.6 ns | 211.741 ns |   604.109 ns |  4,201.2 ns |   0.89 |     0.28 |       - |       0 B |        
+|                   Method | Repeats |        Mean |       Error |      StdDev |      Median | Ratio | RatioSD |   Gen 0 | Gen 1 | Gen 2 | Allocated |
+|------------------------- |-------- |------------:|------------:|------------:|------------:|------:|--------:|--------:|------:|------:|----------:|
+|              ConsumeTask |    1000 | 13,068.1 ns | 1,537.87 ns | 4,437.11 ns | 10,850.4 ns |  3.08 |    0.95 | 17.2119 |     - |     - |   72072 B |
+|    ConsumeValueTaskWrong |    1000 | 13,884.2 ns |   549.64 ns | 1,523.06 ns | 13,473.2 ns |  3.11 |    0.50 |       - |     - |     - |         - |
+| ConsumeValueTaskProperly |    1000 |  4,567.8 ns |    90.81 ns |   133.11 ns |  4,543.2 ns |  1.00 |    0.00 |       - |     - |     - |         - |
+|    ConsumeValueTaskCrazy |    1000 |  3,380.4 ns |    67.19 ns |    74.69 ns |  3,371.6 ns |  0.74 |    0.03 |       - |     - |     - |         - |     
 
 https://github.com/adamsitnik/StateOfTheDotNetPerformance        
 ");        
