@@ -24,13 +24,17 @@ static class SyncOverAsyncExtensions
     {
         return Task.Factory.StartNew(() =>
         {
+            Console.WriteLine($"Entering SyncContext {Thread.CurrentThread.ManagedThreadId}");
             action();
+            Console.WriteLine($"Exiting SyncContext {Thread.CurrentThread.ManagedThreadId}");
         }, CancellationToken.None, TaskCreationOptions.None, scheduler);
     }
 
     public static async Task<string> DoAsyncOperation(this SyncOverAsync runnable)
     {
+        Console.WriteLine($"Entering DoAsyncOperation {Thread.CurrentThread.ManagedThreadId}");
         await Task.Delay(2);
+        Console.WriteLine($"Finishing DoAsyncOperation {Thread.CurrentThread.ManagedThreadId}");
         return "Hello";
     }
 }

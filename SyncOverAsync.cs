@@ -6,6 +6,7 @@ class SyncOverAsync : IRunnable
     {
         return this.WrapInContext(() =>
         {
+            BlocksUsesDefaultScheduler();
             //BlocksAndPotentiallyDeadlocks();
             //BlocksAndPotentiallyDeadlocks2();
         });
