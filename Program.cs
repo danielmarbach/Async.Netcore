@@ -39,20 +39,9 @@ class Program
     {
         Console.Clear();
 
-        var runnersWithExplainer = (
-            from runnable in RunnableProvider.All()
-            let explainer = CreateExplainer(runnable)
-            select new RunnerWithExplainer(runnable, explainer)
-        );
+        var runnables = RunnablesWithExplainer(RunnableProvider.Presentation());
 
-        var runnables = new Dictionary<int, RunnerWithExplainer>();
-        int currentIndex = 0;
-        foreach (var item in runnersWithExplainer)
-        {
-            runnables.Add(currentIndex++, item);
-        }
-
-        UpdateDescription(runnables);
+        UpdateDescription(RunnablesWithExplainer(RunnableProvider.All()));
         PrintRunnables(runnables);
 
         string line;
@@ -105,6 +94,23 @@ class Program
         }
     }
 
+    static Dictionary<int, RunnerWithExplainer> RunnablesWithExplainer(IRunnable[] runnables)
+    {
+        var allRunnersWithExplainer = (
+            from runnable in runnables
+            let explainer = CreateExplainer(runnable)
+            select new RunnerWithExplainer(runnable, explainer)
+        );
+
+        var allRunnables = new Dictionary<int, RunnerWithExplainer>();
+        int currentIndex = 0;
+        foreach (var item in allRunnersWithExplainer)
+        {
+            allRunnables.Add(currentIndex++, item);
+        }
+        return allRunnables;
+    }
+
     static Action<TextWriter> CreateExplainer(IRunnable runnable)
     {
         var extensionType = Type.GetType($"{runnable.GetType().Name}Extensions", false);
@@ -127,9 +133,9 @@ class Program
         {
             Console.ForegroundColor = ConsoleColor.DarkCyan;
             Console.WriteLine();
-            Console.WriteLine("|==============================================================================|");
-            Console.WriteLine($"| {"Remember".PadRight(77)}|");
-            Console.WriteLine("|==============================================================================|");
+            Console.WriteLine($"|{string.Join("=", Enumerable.Repeat(string.Empty, fullWidth))}|");
+            Console.WriteLine($"{$"| Remember".PadRight(fullWidth)}|");
+            Console.WriteLine($"|{string.Join("=", Enumerable.Repeat(string.Empty, fullWidth))}|");
             Console.WriteLine();
         }
     }
@@ -144,8 +150,8 @@ class Program
 
         threadIds.Push(currentThreadId);
 
-        var longest = runnables.Values.Max(d => d.Name.Length) + 10;
-        int fullWidth = longest * 2;
+        var longest = Math.Max(runnables.Values.Max(d => d.Name.Length) + 10, fullWidth);
+        fullWidth = longest * 2;
 
         var currentColor = Console.ForegroundColor;
         Console.ForegroundColor = ConsoleColor.Green;
@@ -222,6 +228,7 @@ class Program
         }
     }
 
+    static int fullWidth = 35;
     static bool explanationHeaderEnabled = true;
     static Stack<int> threadIds = new Stack<int>(7);
     static MethodInfo ExplanationHeaderPrinter = typeof(Program).GetMethod(nameof(PrintExplanationHeader), BindingFlags.NonPublic | BindingFlags.Static);
