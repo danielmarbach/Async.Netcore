@@ -12,14 +12,27 @@ class SyncOverAsync : IRunnable
         });
     }
 
-    string BlocksUsesDefaultSchedulerThrowsAggregateException()
-    {
-        return Task.Run(() => this.DoAsyncOperation()).Result;
-    }
-
     string BlocksUsesDefaultScheduler()
     {
         return Task.Run(() => this.DoAsyncOperation()).GetAwaiter().GetResult();
+    }
+
+    string BlocksAndPotentiallyDeadlocks()
+    {
+        return this.DoAsyncOperation().GetAwaiter().GetResult();
+    }
+
+    string BlocksAndPotentiallyDeadlocks2()
+    {
+        var task = this.DoAsyncOperation();
+        task.Wait(1000); // timeout deliberately added
+        return task.GetAwaiter().GetResult();
+    }
+
+    // other very creative approaches
+    string BlocksUsesDefaultSchedulerThrowsAggregateException()
+    {
+        return Task.Run(() => this.DoAsyncOperation()).Result;
     }
 
     string BlocksUsesDefaultSchedulerThrowsAggregateExceptionWithAggregateException()
@@ -35,17 +48,5 @@ class SyncOverAsync : IRunnable
     string BlocksCapturesContextPotentiallyDeadlocksThrowsAggregateException()
     {
         return this.DoAsyncOperation().Result;
-    }
-
-    string BlocksAndPotentiallyDeadlocks()
-    {
-        return this.DoAsyncOperation().GetAwaiter().GetResult();
-    }
-
-    string BlocksAndPotentiallyDeadlocks2()
-    {
-        var task = this.DoAsyncOperation();
-        task.Wait(1000); // timeout deliberately added
-        return task.GetAwaiter().GetResult();
     }
 }
