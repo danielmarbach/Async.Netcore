@@ -105,6 +105,14 @@ https://github.com/adamsitnik/StateOfTheDotNetPerformance
 - `WithCancellation` only adds the token to the enumerator but doesn't influence the state machine
 - `WithCancellation` in combination with `[EnumeratorCancellation]` can be used to create a combined token
 
+## CustomAsyncEnumerable
+
+- `WithCancellation` instructs the compiler generated statemachine to call `GetAsyncEnumerator` with the provided token. Otherwise `default(CancellationToken)` will be used.
+
+## PowerfulAsyncEnumerable
+
+- Async Enumerable can be combined in powerful ways with other async and TPL constructs such as `Task.WhenAny`
+
 ## DefaultInterfaces
 
 - Finally we can evolve interfaces as well.
@@ -119,26 +127,4 @@ public interface IRunV2 : IRun
   }
 }
 ```
-
-## HostedServices
-
-- Hosted Services are managed by the host and started and stopped (in reverse order) the host
-- `IHostedService` is the basic abstraction. For long running background tasks use `BackgroundService`.
-- GenericHost starts hosted services before everything else while WebHost starts the ASP.NET Core pipeline concurrent to the hosted services. This means initializing things in hosted services that controllers rely on can be dangerous.
-
-## Pipelines
-
-- All buffer management is delegated to the `PipeReader`/`PipeWriter` implementations.`
-- Besides handling the memory management, the other core pipelines feature is the ability to peek at data in the Pipe without actually consuming it.
-- `FlushAsync` provides back pressure and flow control. PipeWriter.FlushAsync “blocks” when the amount of data in the Pipe crosses PauseWriterThreshold and “unblocks” when it becomes lower than ResumeWriterThreshold.
-- `PipeScheduler` gives fine grained control over scheduling the IO.
-
-## Channels
-
-- Low-level async primitives that allows to build higher level primitives like Dataflow library for example.
-- Influenced by Go channels
-- Data structure for publish/subscribe scenarios
-- Allows decoupling of publishes from subscribers
-- Can be combined in-memory or combined with pipelines to buffer network input and output
-- Very good overview can be found in [Nicolas Portmann's article](https://ndportmann.com/system-threading-channels/)
 
