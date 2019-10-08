@@ -16,7 +16,7 @@ class AsyncDisposable : IRunnable
         }        
     }
 
-    class WrongDisposable : BaseForAsyncDisposable, IDisposable
+    class WrongDisposable : DisposableBase, IDisposable
     {
         public void Dispose()
         {
@@ -28,7 +28,7 @@ class AsyncDisposable : IRunnable
         }
     }
 
-    class CorrectDisposable : BaseForAsyncDisposable, IAsyncDisposable, IDisposable
+    class CorrectDisposable : DisposableBase, IAsyncDisposable, IDisposable
     {
         public async ValueTask DisposeAsync()
         {

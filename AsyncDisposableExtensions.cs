@@ -16,11 +16,11 @@ static class AsyncDisposableExtensions
     }
 }
 
-class BaseForAsyncDisposable
+class DisposableBase
 {
     protected Stream stream;
 
-    protected BaseForAsyncDisposable()
+    protected DisposableBase()
     {
         stream = new FakeStream();
     }
