@@ -8,6 +8,9 @@ static class GoodCitizenExtensions
     {
         writer.WriteLine(@"
 - Is async all the way and embraces virality of the API where it makes sense (IO-bound path)
+- Async void methods will crash the process if an exception is thrown
+- `Task`-returning methods are better since unhandled exceptions trigger the `TaskScheduler.UnobservedTaskException`
+- Be ware that only when the finalizers are run the unobserved exception is thrown
 - Does not explicitely offload to the worker thread pool by using `Task.Run` or `Task.Factory.StartNew` (offloading is a concern of the caller)
 - Returns `Task`, `Task<TResult>`, `ValueTask` or `ValueTask<TResult>`
 - Accepts `CancellationToken` if cancellation is appropriate. It is OK to add it but not respect it. Cancellation is cooperative.

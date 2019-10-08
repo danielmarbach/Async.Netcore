@@ -35,7 +35,6 @@ static class ShortcutStatemachineExtensions
 |-------- |----------:|
 |  Return |     376 B |
 |  Await  |     488 B |
-| Actions |     352 B |
 
 - NET Core 3.0 RC1:
 
@@ -43,7 +42,6 @@ static class ShortcutStatemachineExtensions
 |-------- |----------:|
 |  Return |     344 B |
 |  Await  |     456 B |
-| Actions |     348 B |
 
 ");
     }
