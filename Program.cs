@@ -150,7 +150,7 @@ class Program
 
         threadIds.Push(currentThreadId);
 
-        var longest = Math.Max(runnables.Values.Max(d => d.Name.Length) + 10, fullWidth);
+        var longest = Math.Max(runnables.Values.Max(d => d.Name.Length) + 10, 35);
         fullWidth = longest * 2;
 
         var currentColor = Console.ForegroundColor;
@@ -228,7 +228,7 @@ class Program
         }
     }
 
-    static int fullWidth = 35;
+    static int fullWidth;
     static bool explanationHeaderEnabled = true;
     static Stack<int> threadIds = new Stack<int>(7);
     static MethodInfo ExplanationHeaderPrinter = typeof(Program).GetMethod(nameof(PrintExplanationHeader), BindingFlags.NonPublic | BindingFlags.Static);
