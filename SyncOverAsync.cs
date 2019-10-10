@@ -6,15 +6,10 @@ class SyncOverAsync : IRunnable
     {
         return this.WrapInContext(() =>
         {
-            BlocksUsesDefaultScheduler();
-            //BlocksAndPotentiallyDeadlocks();
+            BlocksAndPotentiallyDeadlocks();
             //BlocksAndPotentiallyDeadlocks2();
+            // BlocksUsesDefaultScheduler();
         });
-    }
-
-    string BlocksUsesDefaultScheduler()
-    {
-        return Task.Run(() => this.DoAsyncOperation()).GetAwaiter().GetResult();
     }
 
     string BlocksAndPotentiallyDeadlocks()
@@ -27,6 +22,11 @@ class SyncOverAsync : IRunnable
         var task = this.DoAsyncOperation();
         task.Wait(1000); // timeout deliberately added
         return task.GetAwaiter().GetResult();
+    }
+
+    string BlocksUsesDefaultScheduler()
+    {
+        return Task.Run(() => this.DoAsyncOperation()).GetAwaiter().GetResult();
     }
 
     // other very creative approaches
