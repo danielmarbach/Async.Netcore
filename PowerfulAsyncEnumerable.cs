@@ -13,7 +13,7 @@ class PowerfulAsyncEnumerable : IRunnable
     {
         var httpClient = new HttpClient();
 
-        using var tokenSource = new CancellationTokenSource(TimeSpan.FromSeconds(3));
+        using var tokenSource = new CancellationTokenSource(TimeSpan.FromSeconds(10));
         var packagesWithNetFxAsms = new List<PackageMetadata>();
         var totalCount = 0;
 

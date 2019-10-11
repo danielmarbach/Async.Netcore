@@ -36,7 +36,7 @@ static class ShortcutStatemachineExtensions
 |  Return |     376 B |
 |  Await  |     488 B |
 
-- NET Core 3.0 RC1:
+- NET Core 3.0:
 
 |  Method | Allocated |
 |-------- |----------:|
