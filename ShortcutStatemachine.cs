@@ -15,14 +15,14 @@ class ShortcutStatemachine : IRunnable
 
     async Task DoesNotShortcut()
     {
-        var tcs = new CancellationTokenSource(TimeSpan.FromSeconds(2));
-        await Task.Delay(TimeSpan.FromMinutes(1), tcs.Token);
+        using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(2));
+        await Task.Delay(TimeSpan.FromMinutes(1), cts.Token);
     }
 
     Task DoesShortcut()
     {
-        var tcs = new CancellationTokenSource(TimeSpan.FromSeconds(2));
-        return Task.Delay(TimeSpan.FromMinutes(1), tcs.Token);
+        using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(2));
+        return Task.Delay(TimeSpan.FromMinutes(1), cts.Token);
     }
 
     Task Surprise() 
