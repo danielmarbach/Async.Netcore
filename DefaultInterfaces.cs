@@ -5,23 +5,22 @@ class DefaultInterfaces : IRunnable
 {
     public async Task Run()
     {
-        IRunV2 run = new Run();
+        IRun run = new Run();
         await run.Run();
     }
 }
 
 public interface IRun {
     Task RunAsync();
-}
 
-public interface IRunV2 : IRun {
-    async Task Run() 
+    // Method added in V2
+    async ValueTask Run() 
     {
         await RunAsync().ConfigureAwait(false);
     }
 }
 
-class Run : IRunV2
+class Run : IRun
 {
     public Task RunAsync()
     {
