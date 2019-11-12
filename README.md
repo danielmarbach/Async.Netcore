@@ -39,8 +39,11 @@
 - They can use the regular keywords.
 - The compiler generates (of course with the async statemachine that I omitted here)
 ```
-public interface IRunV2 : IRun
+public interface IRun
 {
+  Task RunAsync();
+
+  // added in v2
   async Task Run()
   {
     await this.RunAsync().ConfigureAwait(false);
